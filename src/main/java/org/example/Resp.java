@@ -50,6 +50,7 @@ public class Resp {
         Value value = new Value();
         value.type = STR;
         value.str = readLine();
+        return value;
     }
 
     private int readInteger() throws IOException {
@@ -95,8 +96,8 @@ public class Resp {
             case BULK:  return readBulk();
             case INT:   return readInt();
             case STR:   return readString();
-            case ERR:   throw new IOException("Unknown Exception of Datatype!!");
-            default:    return
+            case ERR:
+            default:    throw new IOException("Unknown Exception of Datatype!!");
         }
     }
 
