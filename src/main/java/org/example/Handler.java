@@ -14,11 +14,10 @@ public class Handler implements Runnable {
     public void run(){
         try {
             Resp resp = new Resp(clientSocket.getInputStream());
-            Resp.Value value = resp.read();
+            Value value = resp.read();
             System.out.println("Parsed RESP object:");
             System.out.println(resp.toString());
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
-            writer.printf(resp.toString());
+            clientSocket.getOutputStream().write(value.marshall());
         } catch (IOException e) {
             System.out.println("Error handling client: " + e.getMessage());
         } finally {

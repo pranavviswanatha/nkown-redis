@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
 
@@ -18,8 +19,11 @@ public class Client {
             writer.flush();
 
             // Read the response
-            String response = reader.readLine();
-            System.out.println("Server response: " + response);
+            while (true) {
+                String response = reader.readLine();
+                if (response==null) break;
+                System.out.println("Server response: " + response);
+            }
 
         } catch (IOException e) {
             System.err.println("Error communicating with server: " + e.getMessage());
