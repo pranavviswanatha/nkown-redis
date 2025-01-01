@@ -1,8 +1,6 @@
 package org.example;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Value {
     public final static char STR = '+';
@@ -10,7 +8,7 @@ public class Value {
     public final static char INT = ':';
     public final static char BULK = '$';
     public final static char ARR = '*';
-    public final static char NULL = '_';
+    public final static char NIL = '_';
 
     char type;
     String str;
@@ -19,7 +17,7 @@ public class Value {
     Value[] array;
 
     Value() {
-        this.type = NULL;
+        this.type = NIL;
         this.array = new Value[0];
     }
 
@@ -30,7 +28,7 @@ public class Value {
             case ARR:   return marshallArray();
             case INT:   return marshallInt();
             case ERR:   return marshallError();
-            case NULL:  return marshallNull();
+            case NIL:  return marshallNull();
             default:    return new byte[0];
         }
     }

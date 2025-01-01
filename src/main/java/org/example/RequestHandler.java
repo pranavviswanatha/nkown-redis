@@ -14,7 +14,7 @@ public class RequestHandler {
     private static final ReadWriteLock lock;
 
     private static Map<String, String> set;
-    private static Map<String, ConcurrentHashMap<String, String>> hset;
+    private static Map<String, Map<String, String>> hset;
 
     static {
         //different redis commands
@@ -24,6 +24,7 @@ public class RequestHandler {
         handlers.put("GET", RequestHandler::get);
         handlers.put("HSET", RequestHandler::hset);
         handlers.put("HGET", RequestHandler::hget);
+        handlers.put("HGETALL", RequestHandler::hgetall);
 
         //used for storage
         set = new ConcurrentHashMap<>();
@@ -56,7 +57,7 @@ public class RequestHandler {
                 .build();
     }
 
-    private static Value nullMessage() {
+    private static Value nilMessage() {
         return new ValueBuilder()
                 .build();
     }
@@ -95,7 +96,7 @@ public class RequestHandler {
             String key = args[0].bulk;
             lock.readLock().lock();
             if (!set.containsKey(key))
-                return nullMessage();
+                return nilMessage();
             String bulk = set.get(key);
             lock.readLock().unlock();
             return new ValueBuilder()
@@ -116,7 +117,7 @@ public class RequestHandler {
             String v = args[2].bulk;
 
             lock.writeLock().lock();
-            ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+            Map<String, String> map = new ConcurrentHashMap<>();
             if (hset.containsKey(k1)) {
                 map = hset.get(k1);
             }
@@ -140,16 +141,41 @@ public class RequestHandler {
             lock.readLock().lock();
             String bulk = null;
             if (hset.containsKey(k1)) {
-                ConcurrentHashMap<String,String> map = hset.get(k1);
+                Map<String,String> map = hset.get(k1);
                 bulk = map.getOrDefault(k2, null);
             }
             lock.readLock().unlock();
 
             if (bulk == null)
-                return nullMessage();
+                return nilMessage();
             return new ValueBuilder()
                     .setType(Value.BULK)
                     .setBulk(bulk)
+                    .build();
+        } catch (IOException e) {
+            return errorMessage(e);
+        }
+    }
+
+    private static Value hgetall(Value[] args) {
+        try {
+            if (args.length != 1)
+                throw new IOException("ERR wrong number of arguments for 'hgetall' command");
+            String key = args[0].bulk;
+            lock.readLock().lock();
+            Map<String, String> map = hset.getOrDefault(key, new ConcurrentHashMap<>());
+            int i = 0, sz = map.size() * 2;
+            Value[] values = new Value[sz];
+            for (String s: map.keySet()) {
+                values[i++] = new ValueBuilder()
+                        .setType(Value.BULK)
+                        .setBulk(s)
+                        .build();
+            }
+            lock.readLock().unlock();
+            return new ValueBuilder()
+                    .setType(Value.ARR)
+                    .setArray(values)
                     .build();
         } catch (IOException e) {
             return errorMessage(e);
