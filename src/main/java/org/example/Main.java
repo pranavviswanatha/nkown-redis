@@ -22,7 +22,7 @@ public class Main {
         try {
             while (true) {
                 clientSocket = serverSocket.accept();
-                new Thread(new Handler(clientSocket)).start();
+                new Thread(new ClientHandler(clientSocket)).start();
                 System.out.println("Client connected "+clientSocket.getInetAddress());
             }
         } catch (IOException e) {

@@ -42,8 +42,9 @@ public class Resp {
         Value value = new Value();
         value.type = Value.ARR;
         int length = readInteger();
+        value.array = new Value[length];
         for (int i=0;i<length;i++)
-            value.array.add(read());
+            value.array[i] = read();
         return value;
     }
 

@@ -16,10 +16,11 @@ public class Value {
     String str;
     int num;
     String bulk;
-    List<Value> array;
+    Value[] array;
 
     Value() {
-        this.array = new ArrayList<>();
+        this.type = NULL;
+        this.array = new Value[0];
     }
 
     public byte[] marshall() {
@@ -58,6 +59,7 @@ public class Value {
         StringBuilder sb = new StringBuilder();
         sb.append(BULK)
                 .append(bulk == null ? "-1" : bulk.length());
+        sb.append("\r\n");
         if (bulk != null) {
             sb.append(bulk)
                     .append("\r\n");
@@ -68,7 +70,7 @@ public class Value {
     private byte[] marshallArray() {
         StringBuilder sb = new StringBuilder();
         sb.append(ARR)
-                .append(array.size())
+                .append(array.length)
                 .append("\r\n");
         for (Value v : array) {
             sb.append(new String(v.marshall(),StandardCharsets.UTF_8));
