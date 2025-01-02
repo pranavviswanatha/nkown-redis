@@ -1,4 +1,6 @@
-package org.example;
+package org.example.resp;
+
+import org.example.resp.Value;
 
 import java.io.BufferedReader;
 import java.io.IOException;

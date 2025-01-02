@@ -1,6 +1,4 @@
-package org.example;
-
-import java.util.List;
+package org.example.resp;
 
 public class ValueBuilder {
     private char type;

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.resp;
 
 import java.nio.charset.StandardCharsets;
 
@@ -10,11 +10,11 @@ public class Value {
     public final static char ARR = '*';
     public final static char NIL = '_';
 
-    char type;
-    String str;
-    int num;
-    String bulk;
-    Value[] array;
+    public char type;
+    public String str;
+    public int num;
+    public String bulk;
+    public Value[] array;
 
     Value() {
         this.type = NIL;

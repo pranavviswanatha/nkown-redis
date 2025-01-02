@@ -1,4 +1,7 @@
-package org.example;
+package org.example.handler;
+
+import org.example.resp.Resp;
+import org.example.resp.Value;
 
 import java.io.*;
 import java.net.Socket;
