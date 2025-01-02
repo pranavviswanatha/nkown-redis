@@ -1,5 +1,6 @@
 package org.example.handler;
 
+import org.example.aof.Aof;
 import org.example.resp.Value;
 import org.example.resp.ValueBuilder;
 
@@ -15,6 +16,8 @@ import java.util.function.Function;
 public class RequestHandler {
     private static Map<String, Function<Value[],Value>> handlers;
     private static final ReadWriteLock lock;
+
+    public static Aof aof;
 
     private static Map<String, String> set;
     private static Map<String, Map<String, String>> hset;
@@ -43,6 +46,9 @@ public class RequestHandler {
         Function<Value[], Value> handler = handlers.get(cmd);
         if (handler == null)
             throw new IOException("Invalid Request, unknown command!!");
+        if (cmd.matches("SET")) {
+            aof.write(request);
+        }
         return handler.apply(args);
     }
 
@@ -185,4 +191,7 @@ public class RequestHandler {
         }
     }
 
+    public static void setAof(Aof aof) {
+        RequestHandler.aof = aof;
+    }
 }
