@@ -1,5 +1,8 @@
 package org.example.aof;
 
+import org.example.handler.RequestHandler;
+import org.example.resp.MarshalValue;
+import org.example.resp.Resp;
 import org.example.resp.Value;
 
 import java.io.*;
@@ -53,7 +56,7 @@ public class Aof {
     public void write (Value value) throws IOException {
         lock.lock();
         try {
-            fos.write(value.marshall());
+            fos.write(MarshalValue.marshal(value));
         } finally {
             lock.unlock();
         }
@@ -70,4 +73,16 @@ public class Aof {
         }
     }
 
+    public void load() throws IOException {
+        Resp resp = new Resp(new FileInputStream(file));
+        Value value = null;
+        while (true) {
+            try {
+                value = resp.read();
+                RequestHandler.loadAof(value);
+            } catch (IOException e) {
+                break;
+            }
+        }
+    }
 }

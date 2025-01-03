@@ -38,45 +38,57 @@ public class RequestHandler {
         lock = new ReentrantReadWriteLock();
     }
 
+    public static void loadAof(Value value) {
+        String cmd = value.array[0].bulk;
+        Value[] args = Arrays.copyOfRange(value.array, 1, value.array.length);
+        Function<Value[], Value> handler = handlers.get(cmd);
+        handler.apply(args);
+    }
+
     public static Value handleRequest(Value request) throws IOException {
-        if (request.type != Value.ARR || request.array.length == 0)
+        if (request.type != ValueBuilder.ARR || request.array.length == 0)
             throw new IOException("Invalid Request, no command provided!!");
         String cmd = request.array[0].bulk;
         Value[] args = Arrays.copyOfRange(request.array, 1, request.array.length);
         Function<Value[], Value> handler = handlers.get(cmd);
         if (handler == null)
             throw new IOException("Invalid Request, unknown command!!");
-        if (cmd.matches("SET")) {
+        Value value = handler.apply(args);
+        if (value.type!=ValueBuilder.NIL && cmd.matches("SET")) {
             aof.write(request);
         }
-        return handler.apply(args);
+        return value;
     }
 
     private static Value okMessage() {
         return new ValueBuilder()
-                .setType(Value.STR)
+                .setType(ValueBuilder.STR)
                 .setStr("OK")
                 .build();
     }
 
     public static Value errorMessage(IOException e) {
         return new ValueBuilder()
-                .setType(Value.ERR)
+                .setType(ValueBuilder.ERR)
                 .setStr(e.getMessage())
                 .build();
     }
 
     private static Value nilMessage() {
         return new ValueBuilder()
+                .setType(ValueBuilder.NIL)
                 .build();
     }
 
     private static Value ping(Value[] args) {
         if (args.length == 0) {
-            return okMessage();
+            return new ValueBuilder()
+                    .setType(ValueBuilder.STR)
+                    .setStr("PONG")
+                    .build();
         }
         return new ValueBuilder()
-                .setType(Value.STR)
+                .setType(ValueBuilder.STR)
                 .setStr(args[0].bulk)
                 .build();
     }
@@ -109,7 +121,7 @@ public class RequestHandler {
             String bulk = set.get(key);
             lock.readLock().unlock();
             return new ValueBuilder()
-                    .setType(Value.BULK)
+                    .setType(ValueBuilder.BULK)
                     .setBulk(bulk)
                     .build();
         } catch (IOException e) {
@@ -158,7 +170,7 @@ public class RequestHandler {
             if (bulk == null)
                 return nilMessage();
             return new ValueBuilder()
-                    .setType(Value.BULK)
+                    .setType(ValueBuilder.BULK)
                     .setBulk(bulk)
                     .build();
         } catch (IOException e) {
@@ -177,13 +189,13 @@ public class RequestHandler {
             Value[] values = new Value[sz];
             for (String s: map.keySet()) {
                 values[i++] = new ValueBuilder()
-                        .setType(Value.BULK)
+                        .setType(ValueBuilder.BULK)
                         .setBulk(s)
                         .build();
             }
             lock.readLock().unlock();
             return new ValueBuilder()
-                    .setType(Value.ARR)
+                    .setType(ValueBuilder.ARR)
                     .setArray(values)
                     .build();
         } catch (IOException e) {

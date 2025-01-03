@@ -23,14 +23,14 @@ public class Resp {
 
     private Value readInt() throws IOException {
         Value value = new Value();
-        value.type = Value.INT;
+        value.type = ValueBuilder.INT;
         value.num = readInteger();
         return value;
     }
 
     private Value readString() throws IOException {
         Value value = new Value();
-        value.type = Value.STR;
+        value.type = ValueBuilder.STR;
         value.str = readLine();
         return value;
     }
@@ -42,7 +42,7 @@ public class Resp {
 
     private Value readArray() throws IOException {
         Value value = new Value();
-        value.type = Value.ARR;
+        value.type = ValueBuilder.ARR;
         int length = readInteger();
         value.array = new Value[length];
         for (int i=0;i<length;i++)
@@ -52,7 +52,7 @@ public class Resp {
 
     private Value readBulk() throws IOException {
         Value value = new Value();
-        value.type = Value.BULK;
+        value.type = ValueBuilder.BULK;
         int length = readInteger();
         if (length == -1) {
             value.bulk = null;
@@ -75,11 +75,11 @@ public class Resp {
         if (type == -1)
             throw new IOException("End of stream.");
         switch (type) {
-            case Value.ARR:   return readArray();
-            case Value.BULK:  return readBulk();
-            case Value.INT:   return readInt();
-            case Value.STR:   return readString();
-            case Value.ERR:
+            case ValueBuilder.ARR:   return readArray();
+            case ValueBuilder.BULK:  return readBulk();
+            case ValueBuilder.INT:   return readInt();
+            case ValueBuilder.STR:   return readString();
+            case ValueBuilder.ERR:
             default:    throw new IOException("Unknown Exception of Datatype!!");
         }
     }

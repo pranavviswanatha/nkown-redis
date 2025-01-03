@@ -1,6 +1,14 @@
 package org.example.resp;
 
 public class ValueBuilder {
+
+    public final static char STR = '+';
+    public final static char ERR = '-';
+    public final static char INT = ':';
+    public final static char BULK = '$';
+    public final static char ARR = '*';
+    public final static char NIL = '_';
+
     private char type;
     private String str;
     private int num;

@@ -76,25 +76,26 @@ public class Client {
 
         // Read lines until the end of the response
         while ((line = reader.readLine()) != null) {
-            response.append(line).append(System.lineSeparator());}
-//            if (line.isEmpty() || line.charAt(0) == '+' || line.charAt(0) == '-' || line.charAt(0) == ':' || line.charAt(0) == '*') {
-//                break; // End of simple response
-//            }
-//            if (line.startsWith("$")) {
-//                int bulkLength = Integer.parseInt(line.substring(1));
-//                if (bulkLength > 0) {
-//                    char[] bulkData = new char[bulkLength];
-//                    reader.read(bulkData, 0, bulkLength);
-//                    response.append(new String(bulkData)).append(System.lineSeparator());
-//                    reader.readLine(); // Consume the trailing CRLF
-//                }
-//                break;
-//            }
-//            if (line.startsWith("*")) {
-//                // Handle array responses here if needed
-//                break;
-//            }
-//        }
+            response.append(line).append(System.lineSeparator());
+            if (line.isEmpty() || line.charAt(0) == '+' || line.charAt(0) == '-' || line.charAt(0) == ':' || line.charAt(0) == '*') {
+                break; // End of simple response
+            }
+            if (line.startsWith("$")) {
+                int bulkLength = Integer.parseInt(line.substring(1));
+                if (bulkLength > 0) {
+                    char[] bulkData = new char[bulkLength];
+                    reader.read(bulkData, 0, bulkLength);
+                    response.append(new String(bulkData)).append(System.lineSeparator());
+                    reader.readLine(); // Consume the trailing CRLF
+                }
+                break;
+            }
+            if (line.startsWith("*")) {
+                // Handle array responses here if needed
+
+                break;
+            }
+        }
 
         return response.toString();
     }

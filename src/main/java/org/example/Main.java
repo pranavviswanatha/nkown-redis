@@ -18,33 +18,33 @@ public class Main {
         try {
             serverSocket = new ServerSocket(6379);
             serverSocket.setReuseAddress(true);
+            Aof aof = null;
+            try {
+                aof = new Aof(new File("database.aof"));
+                RequestHandler.setAof(aof);
+                aof.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (aof != null) {
+                    aof.close();
+                }
+            }
+            Socket clientSocket = null;
+            try {
+                while (true) {
+                    clientSocket = serverSocket.accept();
+                    new Thread(new ClientHandler(clientSocket)).start();
+                    System.out.println("Client connected "+clientSocket.getInetAddress());
+                }
+            } catch (IOException e) {
+                System.out.println("Server connection failed!!");
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             System.out.println("Server creation failed!!");
             e.printStackTrace();
             return;
-        }
-
-        Aof aof = null;
-        try {
-            aof = new Aof(new File("database.aof"));
-            RequestHandler.setAof(aof);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (aof != null) {
-                aof.close();
-            }
-        }
-        Socket clientSocket = null;
-        try {
-            while (true) {
-                clientSocket = serverSocket.accept();
-                new Thread(new ClientHandler(clientSocket)).start();
-                System.out.println("Client connected "+clientSocket.getInetAddress());
-            }
-        } catch (IOException e) {
-            System.out.println("Server connection failed!!");
-            e.printStackTrace();
         }
 
 

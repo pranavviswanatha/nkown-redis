@@ -1,5 +1,6 @@
 package org.example.handler;
 
+import org.example.resp.MarshalValue;
 import org.example.resp.Resp;
 import org.example.resp.Value;
 
@@ -25,7 +26,7 @@ public class ClientHandler implements Runnable {
                 } catch (IOException e) {
                     response = RequestHandler.errorMessage(e);
                 }
-                clientSocket.getOutputStream().write(response.marshall());
+                clientSocket.getOutputStream().write(MarshalValue.marshal(response));
             }
         } catch (IOException e) {
             System.out.println("Error handling client: " + e.getMessage());
