@@ -53,10 +53,11 @@ public class Aof {
         thread.start();
     }
 
-    public void write (Value value) throws IOException {
+    public synchronized void write (Value value) throws IOException {
         lock.lock();
         try {
             fos.write(MarshalValue.marshal(value));
+            fos.flush();
         } finally {
             lock.unlock();
         }

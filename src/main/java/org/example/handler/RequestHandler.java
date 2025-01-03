@@ -53,11 +53,10 @@ public class RequestHandler {
         Function<Value[], Value> handler = handlers.get(cmd);
         if (handler == null)
             throw new IOException("Invalid Request, unknown command!!");
-        Value value = handler.apply(args);
-        if (value.type!=ValueBuilder.NIL && cmd.matches("SET")) {
+        if (cmd.endsWith("SET")) {
             aof.write(request);
         }
-        return value;
+        return handler.apply(args);
     }
 
     private static Value okMessage() {
@@ -191,6 +190,10 @@ public class RequestHandler {
                 values[i++] = new ValueBuilder()
                         .setType(ValueBuilder.BULK)
                         .setBulk(s)
+                        .build();
+                values[i++] = new ValueBuilder()
+                        .setType(ValueBuilder.BULK)
+                        .setBulk(map.get(s))
                         .build();
             }
             lock.readLock().unlock();

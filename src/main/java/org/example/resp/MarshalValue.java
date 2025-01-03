@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 
 public class MarshalValue {
     public static byte[] marshal(Value value){
+        if (value == null)
+            return new byte[0];
         switch (value.type) {
             case ValueBuilder.STR :  return marshalString(value);
             case ValueBuilder.BULK:  return marshalBulk(value);
