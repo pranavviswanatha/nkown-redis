@@ -11,8 +11,9 @@ This project is a **learning exercise** to implement a basic Redis-like server u
 - **GET**: Retrieves the value of a key.
 - **HSET**: Stores a field-value pair in a hash.
 - **HGET**: Retrieves the value of a field in a hash.
+- **HGETALL**: Retrieves all fields and values in a hash.
 
-This implementation uses a basic in-memory store and supports thread-safe operations using `ReadWriteLock`.
+This implementation uses a basic in-memory store and supports thread-safe operations using `ReadWriteLock` and `ReentrantLock`.
 
 Based on the blog: www.build-redis-from-scratch.dev/en
 
@@ -31,3 +32,8 @@ Based on the blog: www.build-redis-from-scratch.dev/en
    ```bash
    git clone https://github.com/pranavviswanatha/nkown-redis.git
    cd nkown-redis
+   
+2. To run:
+   ```bash
+   mvn clean install
+   java -cp target/classes org.example.Main
